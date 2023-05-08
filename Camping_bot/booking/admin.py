@@ -2,8 +2,7 @@ from django.contrib import admin
 from telebot import telebot
 
 import Camping_bot
-from booking.management.commands.models import Booking
-from .models import Message
+from booking.management.commands.models import *
 # from .views import bot_mailing
 
 

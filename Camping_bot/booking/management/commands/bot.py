@@ -11,8 +11,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from telebot import types
 
-from .models import Booking, External_id
-from booking.models import Message
+from .models import *
 
 bot = telebot.TeleBot(settings.TELEGRAM_BOT_TOKEN)
 
@@ -33,17 +32,15 @@ class Extern:
 booking_data = BookingData()
 external = Extern()
 
-print("")
 
-#функция которая отправляет всем индивидуальным id строчку из БД
-# def send_my_field_value():
-#     my_object = Message.objects.get(id=19)
-#     my_field_value = my_object.m
-#     external_ids = External_id.objects.all()
-#     print(my_field_value)
-#     for external_id in external_ids:
-#         ind_id = external_id.ind_id
-#         bot.send_message(chat_id=ind_id, text=my_field_value)
+# функция которая отправляет всем индивидуальным id строчку из БД
+@receiver(post_save, sender=Message)
+def send_my_field_value(**kwargs):
+    instance = kwargs['instance']
+    external_ids = External_id.objects.all()
+    for external_id in external_ids:
+        ind_id = external_id.ind_id
+        bot.send_message(chat_id=ind_id, text=instance.m)
 
 
 def generate_calendar(year, month):
@@ -100,10 +97,10 @@ def handle_book_command(message):
         pass
 
     bot.send_message(message.chat.id,
-                     f'Здравствуйте!!! Вас приветствует бот для бронирования дат. Для начала бронирования напишите - /Начать')
+                     f'Здравствуйте!!! Вас приветствует бот для бронирования дат. Для начала бронирования напишите - /booking')
 
 
-@bot.message_handler(commands=['Начать'])
+@bot.message_handler(commands=['booking'])
 def handle_book_command(message):
     booking_data.user_id = message.chat.id
     booking_data.selected_dates = []
